@@ -25,6 +25,7 @@ class uniform_data:
 def _normalize_data(data: nm.ndarray, min, max):
     _max, _min = data.max(0), data.min(0)
     k = (max - min) / (_max - _min)
+    # return data
     return max - k * (_max - data)
 
 
@@ -35,7 +36,7 @@ def load_train_data() -> (List[uniform_data], nm.ndarray):
             uniform_data_list.append(uniform_data(data[data.index == i], str(i)))
 
         return uniform_data_list
-
+    # data set is from  http://download.tensorflow.org/data/iris_training.csv
     data = _normalize_data(pd.read_csv(pwd + "/iris_training.csv", index_col="lable"), normalize_min,
                            normalize_max)  # type:pd.DataFrame
 
@@ -43,6 +44,7 @@ def load_train_data() -> (List[uniform_data], nm.ndarray):
 
 
 def load_test_data():
+    # data set is from http://download.tensorflow.org/data/iris_test.csv
     data = pd.read_csv(pwd + "/iris_test.csv", ) # type:pd.DataFrame
     lable=data["lable"]
     del data["lable"]
