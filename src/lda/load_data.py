@@ -3,17 +3,19 @@ import numpy as nm
 import os
 from typing import List
 
-pwd = os.path.dirname(__file__)
+pwd = os.path.dirname(os.path.abspath(__file__))
+
 normalize_max = 1
 normalize_min = 0
 
 
 class uniform_data:
-    def __init__(self, data: nm.ndarray, lable):
+    def __init__(self, data: nm.ndarray, lable,probable):
         self.lable = lable
         self.data = nm.array(data)
         self.mean = nm.array(data.mean(0))
         self.cov = nm.cov(data, rowvar=False)
+        self.probable=probable
 
     def __len__(self):
         return self.data.shape[0]
@@ -21,11 +23,13 @@ class uniform_data:
     def __str__(self):
         return self.__str__()
 
+    @property
+    def feature_len(self):
+        return self.data.shape[1]
 
 def _normalize_data(data: nm.ndarray, min, max):
     _max, _min = data.max(0), data.min(0)
     k = (max - min) / (_max - _min)
-    # return data
     return max - k * (_max - data)
 
 
@@ -33,7 +37,8 @@ def load_train_data() -> (List[uniform_data], nm.ndarray):
     def categroy(data: pd.DataFrame, lable_len):
         uniform_data_list = []
         for i in range(lable_len):
-            uniform_data_list.append(uniform_data(data[data.index == i], str(i)))
+            _data=data[data.index == i]
+            uniform_data_list.append(uniform_data(_data, str(i),len(_data)/len(data)))
 
         return uniform_data_list
     # data set is from  http://download.tensorflow.org/data/iris_training.csv

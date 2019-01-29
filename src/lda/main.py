@@ -1,8 +1,8 @@
 import sys, os
-sys.path.insert(0, os.path.dirname(__file__))
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from linear_regression import load_data
+from lda import load_data
 import numpy as nm
 
 def main():
@@ -18,7 +18,7 @@ def main():
         sa += len(i) * ((i.mean - u).reshape(len(u), 1) @ ((i.mean - u).reshape(1, len(u))))
         sb += i.cov
 
-    # 广义锐利取最大值时 w 为 Sb-1 @ sa 最大特征值对应特征向量（可用拉格郎日乘法证明（周志华著 机器学习 page 61））
+    # 广义锐利取最大值时 w 为 Sb-1 @ sa 最大特征值对应特征向量（可用拉格郎日乘法证明）
     eigvar, eigvect = nm.linalg.eig(nm.linalg.inv(sb) @ sa)
     w = eigvect[:, nm.argmax(eigvar)]  # w is the  eigenvector correspond largest eigenvalue
 

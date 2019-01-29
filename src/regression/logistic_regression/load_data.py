@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as nm
 import os
-from src.lda.load_data import  _normalize_data
+
+from lda.load_data import  _normalize_data
 
 train_set_num = 600
-pwd = os.path.dirname(__file__)
+pwd = os.path.dirname(os.path.abspath(__file__))
 
 def load_data(is_train)->(nm.ndarray,nm.ndarray):
     data=pd.read_csv(pwd+"/titanic.csv")
@@ -14,9 +15,7 @@ def load_data(is_train)->(nm.ndarray,nm.ndarray):
 
     lable = data["Survived"]
     del data["Survived"]
-    # del data["Siblings/Spouses Aboard"]
-    # del data["Parents/Children Aboard"]
-    # del data["Sex"]
+
     data=_normalize_data(data,-1,1)
 
     if  is_train:

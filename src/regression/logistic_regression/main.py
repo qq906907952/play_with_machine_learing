@@ -1,10 +1,9 @@
 import sys
 import os
-import time
 
-sys.path.insert(0, os.path.dirname(__file__))
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as nm
 from logistic_regression.load_data import load_data
@@ -12,7 +11,8 @@ from logistic_regression.load_data import load_data
 #学习比率
 learning_rate=0.01
 #递归次数
-iter_amount=60000
+iter_amount=600000
+
 def main():
     global  learning_rate
     data, lable = load_data(True)
