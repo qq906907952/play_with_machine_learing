@@ -10,9 +10,10 @@ import pandas as pd
 # 学习比率
 learning_rate = 0.01
 # 递归次数
-iter_amount = 600000
+iter_amount = 1000000
 print_pre_step = 1000
 
+bayes=False
 
 def load_data(is_train):
     path = pwd + "/../lda"
@@ -32,16 +33,16 @@ def main():
     lable = []
     real_lable=data["lable"]
     _data = data.drop("lable", axis=1)
-    feature_len=len(data.groupby("lable").count())
-    for i in range(feature_len):
+    classfication_num=len(data.groupby("lable").count())
+    for i in range(classfication_num):
         c = data.lable.replace({i: -1})
         c[c != -1] = 0
         c[c == -1] = 1
 
-        classfication_data.append(nm.array(_data))
+        classfication_data.append(nm.append(nm.array(_data),nm.ones([len(_data),1]),axis=1))
         lable.append(c)
         classfication_probable.append(len(c[c == 1]) / len(c))
-        w.append(nm.random.random([len(_data.columns)]))
+        w.append(nm.random.random([len(_data.columns)+1]))
 
     w = nm.array(w)
     w = w.reshape(list(w.shape) + [1])  # regression variables , shape = classfication x feature x 1
@@ -60,16 +61,20 @@ def main():
             print("==================================")
             print("gradient:\r\n{}".format(str(gradient)))
 
+            if bayes:
+                """
+                    bayes_probabilty : P(C|A)=P(AC)/P(A)
+                                             =(P(A|C)*P(A))/P(A)
+                                             =(P(A|C)*P(A))/sum(P(ACi))
+                                             =(P(A|C)*P(A))/sum(P(A|Ci)*P(Ci))
+                """
 
-            """
-                bayes_probabilty : P(C|A)=P(AC)/P(A)
-                                         =(P(A|C)*P(A))/P(A)
-                                         =(P(A|C)*P(A))/sum(P(ACi))
-                                         =(P(A|C)*P(A))/sum(P(A|Ci)*P(Ci))
-            """
+
+                p=((1 / (1 + nm.exp(z)))*classfication_probable)/nm.sum(1 / (1 + nm.exp(z)),0)
+            else:
+                p=(1 / (1 + nm.exp(z)))
 
 
-            p=((1 / (1 + nm.exp(z)))*classfication_probable)/nm.sum(1 / (1 + nm.exp(z)),0)
             print()
             print("trainning data accuracy:{}".format(str(nm.sum(nm.equal(nm.argmax(p,0).reshape([len(data)]),real_lable))/len(data))))
             print("============={}/{}===============".format(i,iter_amount))
@@ -80,11 +85,14 @@ def main():
     lable=data["lable"]
     del data["lable"]
     _data=[]
-    for i in range(feature_len):
-        _data.append(nm.array(data))
+    for i in range(classfication_num):
+        _data.append(nm.append(nm.array(data),nm.ones([len(data),1]),axis=1))
     _data=nm.array(_data)
     z = - _data @ w
-    p = ((1 / (1 + nm.exp(z))) * classfication_probable) / nm.sum(1 / (1 + nm.exp(z)), 0)
+    if bayes:
+        p = ((1 / (1 + nm.exp(z))) * classfication_probable) / nm.sum(1 / (1 + nm.exp(z)), 0)
+    else:
+        p=(1 / (1 + nm.exp(z)))
     print("testing data accuracy:{}".format(str(nm.sum(nm.equal(nm.argmax(p, 0).reshape([len(data)]), lable)) / len(data))))
 
 if __name__ == "__main__":
