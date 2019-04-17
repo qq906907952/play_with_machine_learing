@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as nm
 import math
+from  sort.quick_sort import quick_sort
 discrete = "discrete"
 continuously = "continuously"
 lable = "survived"
@@ -34,7 +35,8 @@ def information_gain(data: pd.DataFrame, feature, feature_type):
     elif feature_type == continuously: #连续型
         data=data.astype("float64")
         value = list(set(list(data[feature])))
-        value.sort()
+        # value.sort()
+        quick_sort(value)
         i = 0
         split_value,info_gain=0,0
         while i < len(value) - 1:
